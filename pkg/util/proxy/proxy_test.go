@@ -126,13 +126,17 @@ func TestResolve(t *testing.T) {
 					Spec: v1.ServiceSpec{
 						Type:      v1.ServiceTypeClusterIP,
 						ClusterIP: v1.ClusterIPNone,
+						Ports: []v1.ServicePort{
+							{Name: "https", Port: 443, TargetPort: intstr.FromInt(1443)},
+							{Port: 1234, TargetPort: intstr.FromInt(1234)},
+						},
 					},
 				},
 			},
-			endpoints: nil,
+			endpoints: matchingEndpoints,
 
-			clusterMode:  expectation{error: true},
-			endpointMode: expectation{error: true},
+			clusterMode:  expectation{url: "https://alfa.one.svc:443"},
+			endpointMode: expectation{url: "https://127.0.0.1:1443"},
 		},
 		{
 			name: "loadbalancer",
